@@ -22,7 +22,7 @@ import static com.jogamp.opengl.GL2ES3.*;
  * @author Nicholas Nassar
  * An OpenGL application rendering three objects. One of the objects
  * moves according to an equation. The motion can be started by pressing
- * C, and can be stepped through by pressing S. Keys O, P, and C change
+ * C, and can be stepped through by pressing S. Keys O, and P change
  * your perspective.
  */
 
