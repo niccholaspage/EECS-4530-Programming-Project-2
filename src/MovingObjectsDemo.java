@@ -22,7 +22,7 @@ import static com.jogamp.opengl.GL2ES3.*;
  * @author Nicholas Nassar
  * An OpenGL application rendering three objects. One of the objects
  * moves according to an equation. The motion can be started by pressing
- * C, andcan be stepped through by pressing S. Keys O, P, and C change
+ * C, and can be stepped through by pressing S. Keys O, P, and C change
  * your perspective.
  */
 
@@ -137,6 +137,7 @@ public class MovingObjectsDemo {
         }
 
         private void buildObjects(GL4 gl) {
+            // Object 1: Cow
             OBJinfo obj = new OBJinfo();
             obj.readOBJFile("obj/cow.obj");
 
@@ -162,7 +163,7 @@ public class MovingObjectsDemo {
                 gl.glVertexAttribPointer(vNormal, 3, GL_FLOAT, false, 0, vertexBuffer.capacity() * 4);
             }
 
-            //add in cylinder
+            // Object 2: Cylinder
             OBJinfo cylinder = new OBJinfo();
             cylinder.readOBJFile("obj/cylinder.obj");
             vertexBuffer = GLBuffers.newDirectFloatBuffer(cylinder.getVertexList());
@@ -186,7 +187,7 @@ public class MovingObjectsDemo {
                 gl.glVertexAttribPointer(vNormal, 3, GL_FLOAT, false, 0, vertexBuffer.capacity() * 4);
             }
 
-            //add in cones
+            // Object 3: Cones
             OBJinfo cones = new OBJinfo();
             cones.readOBJFile("obj/coneProject2.obj");
             vertexBuffer = GLBuffers.newDirectFloatBuffer(cones.getVertexList());
@@ -245,17 +246,17 @@ public class MovingObjectsDemo {
             gl.glBindVertexArray(vertexArrayName.get(0));
             gl.glBindBuffer(GL_ARRAY_BUFFER, bufferName.get(0));
 
-            //call function to move object (increment t)
+            // call function to move object (increment t)
             if (!step) {
                 moveAlongLine();
             }
 
-            //set of parametric equations
+            // set of parametric equations. deltaY is unneeded since
+            // we are not doing any sort of motion on the Y axis.
             float deltaX = (float) (5.0 * Math.sin(t + (Math.PI / 2)));
-            float deltaY = 0.0f;
             float deltaZ = (float) (5.0 * Math.sin(t * 2));
 
-            translateMatrix.glTranslatef(deltaX, deltaY, deltaZ);
+            translateMatrix.glTranslatef(deltaX, 0.0f, deltaZ);
             PMVMatrix trsMatrix = new PMVMatrix();
             trsMatrix.glLoadIdentity();
             trsMatrix.glMultMatrixf(rotationMatrix.glGetMatrixf());
@@ -354,43 +355,44 @@ public class MovingObjectsDemo {
          * com.jogamp.newt.event.KeyListener#keyPressed(com.jogamp.newt.event.KeyEvent)
          */
         public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            short keyCode = e.getKeyCode();
+            if (keyCode == KeyEvent.VK_ESCAPE) {
                 new Thread(() -> {
                     window.destroy();
                 }).start();
-            } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            } else if (keyCode == KeyEvent.VK_RIGHT) {
                 rotationMatrix.glRotatef(10.0f, 0.0f, 1.0f, 0.0f);
-            } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            } else if (keyCode == KeyEvent.VK_LEFT) {
                 rotationMatrix.glRotatef(-10.0f, 0.0f, 1.0f, 0.0f);
-            } else if (e.getKeyCode() == KeyEvent.VK_X) {
+            } else if (keyCode == KeyEvent.VK_X) {
                 viewMatrix.glLoadIdentity();
                 viewMatrix.gluLookAt(25.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-            } else if (e.getKeyCode() == KeyEvent.VK_Z) {
+            } else if (keyCode == KeyEvent.VK_Z) {
                 viewMatrix.glLoadIdentity();
                 viewMatrix.gluLookAt(0.0f, 0.0f, 25.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-            } else if (e.getKeyCode() == KeyEvent.VK_Y) {
+            } else if (keyCode == KeyEvent.VK_Y) {
                 viewMatrix.glLoadIdentity();
                 viewMatrix.gluLookAt(0.0f, 25.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-            } else if (e.getKeyCode() == KeyEvent.VK_O) {
+            } else if (keyCode == KeyEvent.VK_O) {
                 projectionMatrix.glLoadIdentity();
                 projectionMatrix.glOrthof(-100.0f, 100.0f, -100.0f, 100.0f, -100.0f, 100.0f);
-            } else if (e.getKeyCode() == KeyEvent.VK_P) {
+            } else if (keyCode == KeyEvent.VK_P) {
                 projectionMatrix.glLoadIdentity();
                 projectionMatrix.gluPerspective(60.0f, 1.0f, 0.01f, 1000.0f);
-            } else if (e.getKeyCode() == KeyEvent.VK_I) {
+            } else if (keyCode == KeyEvent.VK_I) {
                 useInstanced = !useInstanced;
                 //step and continous modes added
-            } else if (e.getKeyCode() == KeyEvent.VK_S) {
+            } else if (keyCode == KeyEvent.VK_S) {
                 //step through one at a time
                 step = true;
                 moveAlongLine();
-            } else if (e.getKeyCode() == KeyEvent.VK_C) {
+            } else if (keyCode == KeyEvent.VK_C) {
                 //step through one at a time
                 step = false;
             }
         }
 
-        //function to move object on certain plane
+        // Moves object on the plane
         public void moveAlongLine() {
             t = t + 0.01f;
 
